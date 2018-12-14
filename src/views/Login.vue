@@ -19,13 +19,14 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
+            type='password'
               v-model="loginForm.password"
               placeholder="密码"
             ></el-input>
           </el-form-item>
           <!-- 登录按钮 -->
           <el-form-item>
-              <el-button type="primary" class="login-btn" @click="loginSubmit">登录</el-button>
+              <el-button type="primary" class="login-btn" @click="loginSubmit('loginForm')">登录</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,12 +35,13 @@
 </template>
 
 <script>
+import {loginSubmit} from '@/api'
 export default {
   data () {
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: 'root',
+        password: '123456'
       },
       rules: {
         username: [
@@ -50,8 +52,26 @@ export default {
     }
   },
   methods: {
-    loginSubmit () {
-
+    loginSubmit (formName) {
+      // 1 输入验证
+      this.$refs[formName].validate((valid) => {
+        console.log(valid)
+        // 2 判断
+        if (valid) {
+          // 3 调用接口的promise
+          loginSubmit(this.loginForm).then((res) => {
+            console.log(res)
+            // 4 跳转到登录页面
+            if (res.success === true) {
+              this.$router.push({name: 'index'})
+            } else {
+              this.$message.error('用户名或密码错误')
+            }
+          })
+        } else {
+          this.$message.error('输入用户名或密码不合法')
+        }
+      })
     }
   }
 }
