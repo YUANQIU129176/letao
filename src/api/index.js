@@ -42,9 +42,23 @@ export const addCategoryData = (pa) => {
   })
 }
 
-// 更新分类数据
+// 8 更新分类数据
 export const updateCategory = (pa) => {
   return axios.post('/category/addTopCategory', pa).then((result) => {
+    return result.data
+  })
+}
+
+// 9 分类二 查询渲染
+export const categoryRanderTwo = (page, pageSize) => {
+  return axios.get('/category/querySecondCategoryPaging', {params: {page: page, pageSize: pageSize}}).then((result) => {
+    return result.data
+  })
+}
+
+// 10 商品页面渲染
+export const goodsRander = (page, pageSize) => {
+  return axios.get('/product/queryProductDetailList', {params: {page: page, pageSize: pageSize}}).then((result) => {
     return result.data
   })
 }

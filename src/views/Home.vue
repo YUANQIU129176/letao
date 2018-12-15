@@ -40,7 +40,7 @@
                 <span>一级分类管理</span>
               </template>
             </el-menu-item>
-            <el-menu-item index="2-2">
+            <el-menu-item index="categorytwo">
               <template slot="title">
                 <i class="el-icon-menu"></i>
                 <span>二级分类管理</span>
@@ -50,7 +50,7 @@
           <el-submenu index="3">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>商品管理</span>
+              <span @click="goodsCro">商品管理</span>
             </template>
           </el-submenu>
         </el-menu>
@@ -91,6 +91,10 @@ export default {
     // 点击用户管理时跳转到用户界面
     mainBtn () {
       this.$router.push({name: 'user'})
+    },
+    // 点击商品管理时
+    goodsCro () {
+      this.$router.push({name: 'goods'})
     }
   },
   mounted () {
