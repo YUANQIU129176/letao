@@ -41,3 +41,10 @@ export const addCategoryData = (pa) => {
     return result.data
   })
 }
+
+// 更新分类数据
+export const updateCategory = (pa) => {
+  return axios.post('/category/addTopCategory', pa).then((result) => {
+    return result.data
+  })
+}
