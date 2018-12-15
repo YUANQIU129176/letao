@@ -11,51 +11,49 @@
             alt=""
           >
         </div>
+
         <!-- 下拉导航 -->
-        <el-row>
-          <el-menu
-            :unique-opened=true
-            default-active="2"
-            class="el-menu-vertical-demo el-menu-admin"
-            @open="handleOpen"
-            @close="handleClose"
-            background-color="#545c64"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-            :collapse='collapse'
-          >
-            <el-submenu index="1">
+         <el-menu
+          default-active="1"
+          class="el-menu-vertical-demo el-menu-admin"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          :unique-opened='true'
+          :router='true'
+          :collapse='collapse'
+        >
+          <el-submenu index="1" >
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span @click="mainBtn">用户管理</span>
+            </template>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>分类列表</span>
+            </template>
+            <el-menu-item index="category">
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>用户管理</span>
+                <i class="el-icon-menu"></i>
+                <span>一级分类管理</span>
               </template>
-            </el-submenu>
-            <el-submenu index="2">
+            </el-menu-item>
+            <el-menu-item index="2-2">
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>分类管理</span>
+                <i class="el-icon-menu"></i>
+                <span>二级分类管理</span>
               </template>
-              <el-menu-item index="1-1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>分类管理</span>
-                </template>
-              </el-menu-item>
-              <el-menu-item index="1-2">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>分类管理</span>
-                </template>
-              </el-menu-item>
-            </el-submenu>
-            <el-submenu index="3">
-              <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>商品管理</span>
-              </template>
-            </el-submenu>
-          </el-menu>
-        </el-row>
+            </el-menu-item>
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>商品管理</span>
+            </template>
+          </el-submenu>
+        </el-menu>
       </el-aside>
       <el-container>
         <el-header>
@@ -82,6 +80,7 @@
   </div>
 </template>
 <script>
+import {userSubmit} from '@/api'
 export default {
   data () {
     return {
@@ -89,12 +88,15 @@ export default {
     }
   },
   methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
+    // 点击用户管理时跳转到用户界面
+    mainBtn () {
+      this.$router.push({name: 'user'})
     }
+  },
+  mounted () {
+    userSubmit().then((res) => {
+      console.log(res)
+    })
   }
 }
 </script>

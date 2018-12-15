@@ -63,7 +63,7 @@ export default {
             console.log(res)
             // 4 跳转到登录页面
             if (res.success === true) {
-              this.$router.push({name: 'index'})
+              this.$router.push({name: 'home'})
             } else {
               this.$message.error('用户名或密码错误')
             }
