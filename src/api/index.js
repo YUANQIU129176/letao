@@ -44,7 +44,7 @@ export const addCategoryData = (pa) => {
 
 // 8 更新分类数据
 export const updateCategory = (pa) => {
-  return axios.post('/category/addTopCategory', pa).then((result) => {
+  return axios.post('/category/updateTopCategory', pa).then((result) => {
     return result.data
   })
 }
@@ -59,6 +59,27 @@ export const categoryRanderTwo = (page, pageSize) => {
 // 10 商品页面渲染
 export const goodsRander = (page, pageSize) => {
   return axios.get('/product/queryProductDetailList', {params: {page: page, pageSize: pageSize}}).then((result) => {
+    return result.data
+  })
+}
+
+// 上传添加品牌的按钮
+export const addsecondCategory = (pa) => {
+  return axios.post('/category/addSecondCategory', pa).then((result) => {
+    return result.data
+  })
+}
+
+// 商品管理添加
+export const addGoodsData = (pa) => {
+  return axios.post('/product/addProduct', pa).then((result) => {
+    return result.data
+  })
+}
+
+// 商品修改
+export const updateGoodsData = (pa) => {
+  return axios.post('/product/updateProduct', pa).then((result) => {
     return result.data
   })
 }

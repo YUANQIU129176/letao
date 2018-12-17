@@ -32,11 +32,13 @@
         </el-table-column>
         <el-table-column label="品牌Logo">
           <template slot-scope="scope">
-            <img
-              :src="'http://127.0.0.1:3000'+scope.row.brandLogo"
+            <span>
+              <img
+              :src="'http://127.0.0.1:3000'+ scope.row.brandLogo"
               alt=""
               style="width: 100px;height: 100px"
             >
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -63,41 +65,40 @@
       :visible.sync="adddialogFormVisible"
     >
       <el-form :model="categoryForm">
-        <el-form-item
-          :label-width="formLabelWidth"
-        >
-        <!-- 下拉框 -->
-        <template>
-        <el-select
-          v-model="value"
-          placeholder="请选择"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.id"
-            :label="item.categoryName"
-            :value="item.id"
-          >
-          </el-option>
-        </el-select>
-      </template>
-      <!-- 下拉框 -->
+        <el-form-item :label-width="formLabelWidth">
+          <!-- 下拉框 -->
+          <template>
+            <el-select
+              v-model="id"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.id"
+                :label="item.categoryName"
+                :value="item.id"
+              >
+              </el-option>
+            </el-select>
+          </template>
+          <!-- 下拉框 -->
           <el-input
-            v-model="categoryForm.categoryName"
+            v-model="categoryForm.brandName"
             auto-complete="off"
-            placeholder='请输入分类的名称'
+            placeholder='请输入品牌的名称'
           ></el-input>
           <!-- 图片上传 -->
-        <el-upload
-          action="http://127.0.0.1:3000/category/addSecondCategoryPic"
-          list-type="picture-card"
-          :headers="{ 'Content-Type': 'multipart/form-data' }"
-          :with-credentials="false"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-        >
-          <i class="el-icon-plus"></i>
-        </el-upload>
+          <el-upload
+            action="http://127.0.0.1:3000/category/addSecondCategoryPic"
+            list-type="picture-card"
+            :with-credentials="true"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            name="pic1"
+            :on-success='imgSuccess'
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
         </el-form-item>
       </el-form>
       <div
@@ -111,43 +112,94 @@
         >确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 图片预览 -->
+    <el-dialog
+      title="图片预览"
+      width='80%'
+      :visible.sync="imgdialogTableVisible"
+    >
+     <img :src="imgPath" alt="">
+    </el-dialog>
+    <!-- 分页功能 -->
+    <template>
+      <div class="block">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="page"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="10"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        >
+        </el-pagination>
+      </div>
+    </template>
   </div>
 </template>
 <script>
-import { categoryRanderTwo, categoryRander } from '@/api'
+import { categoryRanderTwo, categoryRander, addsecondCategory } from '@/api'
 export default {
   data () {
     return {
       // 页面渲染数组
       dataList: [],
       page: 1,
-      pageSize: 10,
+      pageSize: 5,
       // 弹框
       adddialogFormVisible: false,
-      categoryForm: {},
+      categoryForm: {
+        brandName: ''
+      },
       formLabelWidth: '120px',
-      value: '',
-      options: []
+      id: '',
+      options: [],
+      imgPath: '',
+      imgdialogTableVisible: false,
+      brandLogo: '',
+      hot: 1,
+      total: 0
     }
   },
   mounted () {
-    categoryRanderTwo(this.page, this.pageSize).then(res => {
-      console.log(res)
-      // 赋值
-      this.dataList = res.rows
-    })
+    this.init()
   },
   methods: {
+    init () {
+      categoryRanderTwo(this.page, this.pageSize).then(res => {
+        console.log(res)
+        // 赋值
+        this.dataList = res.rows
+        this.total = res.total
+      })
+    },
+    // 分页
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      // 当前页为page
+      this.page = val
+      this.init()
+    },
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.init()
+    },
     // 编辑
     handleEdit () {},
 
     // 弹框 提交按钮
-    addSubmit () {},
+    addSubmit () {
+      addsecondCategory({brandName: this.categoryForm.brandName, brandLogo: this.brandLogo, categoryId: this.id, hot: this.hot}).then(res => {
+        console.log(this.brandLogo)
+        this.imgdialogTableVisible = false
+      })
+    },
     // 1添加分类按钮
     addcategory () {
       this.adddialogFormVisible = true
       // 2发送请求
-      categoryRander(this.page, this.pageSize).then((res) => {
+      categoryRander(this.page, this.pageSize).then(res => {
         console.log(res)
         // 3把数据添加到下拉选框中
         this.options = res.rows
@@ -158,9 +210,17 @@ export default {
       console.log(file, fileList)
     },
     handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+      console.log(file)
+      this.imgdialogTableVisible = true
+      this.imgPath = 'http://127.0.0.1:3000' + file.response.picAddr
+    },
+    // 图片上传成功
+    imgSuccess (response, file, fileList) {
+      console.log(response)
+      // 文件路径
+      this.brandLogo = file.response.picAddr
     }
+
   }
 }
 </script>
